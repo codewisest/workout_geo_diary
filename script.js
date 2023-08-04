@@ -35,9 +35,9 @@ class Running extends Workout {
 }
 
 class Cycling extends Workout {
-  constructor(coords, distance, duration, elevationGain) {
+  constructor(coords, distance, duration, elevation) {
     super(coords, distance, duration);
-    this.elevationGain = elevationGain;
+    this.elevation = elevation;
     this.calcSpeed();
   }
 
@@ -52,6 +52,7 @@ class Cycling extends Workout {
 class App {
   #map;
   #mapEvent;
+  #workouts = [];
   constructor() {
     this._getPosition();
 
@@ -94,11 +95,53 @@ class App {
   _newWorkout(e) {
     e.preventDefault();
 
+    const validInputs = (...inputs) =>
+      inputs.every(input => Number.isFinite(input));
+
+    const allPositive = (...inputs) => inputs.every(input => input > 0);
+
+    // get data from form
+    const type = inputType.value;
+    const distance = Number(inputDistance.value);
+    const duration = Number(inputDuration.value);
+    const { lat, lng } = this.#mapEvent.latlng;
+    let workout;
+
+    // if workout is running
+    if (type === 'running') {
+      const cadence = Number(inputCadence.value);
+      if (
+        // !Number.isFinite(distance) ||
+        // !Number.isFinite(duration) ||
+        // !Number.isFinite(cadence)
+        !validInputs(distance, duration, cadence) ||
+        !allPositive(distance, duration, cadence)
+      )
+        return alert('Inputs have to be positive numbers');
+
+      workout = new Running([lat, lng], distance, duration, cadence);
+    }
+
+    // if workout is cycling
+    if (type === 'cycling') {
+      const elevation = Number(inputElevation.value);
+
+      if (
+        !validInputs(distance, duration, elevation) ||
+        !allPositive(distance, duration)
+      )
+        return alert('Inputs have to be positive numbers');
+
+      workout = new Cycling([lat, lng], distance, duration, elevation);
+    }
+
+    this.#workouts.push(workout);
+    console.log(this.#workouts);
+
     // clear input fields
     form.reset();
 
     // display marker
-    const { lat, lng } = this.#mapEvent.latlng;
     L.marker([lat, lng])
       .addTo(this.#map)
       .bindPopup(
