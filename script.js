@@ -151,18 +151,27 @@ class App {
     this.#workouts.push(workout);
     console.log(this.#workouts);
 
-    // clear input fields
-    form.reset();
     this._renderWorkoutMarker(workout);
 
     // render workout on the list
     this._renderWorkout(workout);
+
+    this._hideForm();
   }
 
   _showForm(mapE) {
     this.#mapEvent = mapE;
     form.classList.remove('hidden');
     inputDistance.focus();
+  }
+
+  _hideForm() {
+    form.reset();
+    form.style.display = 'none';
+    form.classList.add('hidden');
+    setTimeout(() => {
+      form.style.display = 'grid';
+    }, 1000);
   }
 
   _toggleElevationField() {
@@ -183,18 +192,21 @@ class App {
           className: 'running-popup',
         })
       )
-      .setPopupContent(workout.type)
+      .setPopupContent(
+        `${workout.type === 'Running' ? '🏃‍♂️' : '🚴'} ${workout.description}`
+      )
       .openPopup();
     console.log(this.#mapEvent);
   }
 
   _renderWorkout(workout) {
+    console.log(workout);
     let html = `
       <li class="workout workout--${workout.type}" data-id="${workout.id}">
         <h2 class="workout__title">${workout.description}</h2>
         <div class="workout__details">
           <span class="workout__icon">${
-            workout.type === 'running' ? '🏃‍♂️' : '🚴'
+            workout.type === 'Running' ? '🏃‍♂️' : '🚴'
           }</span>
           <span class="workout__value">${workout.distance}</span>
           <span class="workout__unit">km</span>
