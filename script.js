@@ -189,7 +189,7 @@ class App {
           minWidth: 100,
           autoClose: false,
           closeOnClick: false,
-          className: 'running-popup',
+          className: `${workout.type.toLowerCase()}-popup`,
         })
       )
       .setPopupContent(
@@ -202,7 +202,9 @@ class App {
   _renderWorkout(workout) {
     console.log(workout);
     let html = `
-      <li class="workout workout--${workout.type}" data-id="${workout.id}">
+      <li class="workout workout--${workout.type.toLowerCase()} ${workout.type.toLowerCase()}-popup" data-id="${
+      workout.id
+    }">
         <h2 class="workout__title">${workout.description}</h2>
         <div class="workout__details">
           <span class="workout__icon">${
