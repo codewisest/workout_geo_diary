@@ -66,12 +66,15 @@ class App {
   #map;
   #mapEvent;
   #workouts = [];
+  #mapZoomLevel = 13;
   constructor() {
     this._getPosition();
 
     form.addEventListener('submit', this._newWorkout.bind(this));
 
     inputType.addEventListener('change', this._toggleElevationField);
+
+    containerWorkouts.addEventListener('click', this._moveToPopup.bind(this));
   }
 
   _getPosition() {
@@ -94,7 +97,7 @@ class App {
 
     const coords = [latitude, longitude];
 
-    this.#map = L.map('map').setView(coords, 13);
+    this.#map = L.map('map').setView(coords, this.#mapZoomLevel);
 
     L.tileLayer('https://tileserver.memomaps.de/tilegen/{z}/{x}/{y}.png', {
       attribution:
@@ -219,7 +222,7 @@ class App {
           <span class="workout__unit">min</span>
         </div>
     `;
-    if (workout.type === 'running')
+    if (workout.type.toLowerCase() === 'running')
       html += `
         <div class="workout__details">
           <span class="workout__icon">⚡️</span>
@@ -233,7 +236,7 @@ class App {
         </div>
       </li>
     `;
-    if (workout.type === 'running')
+    if (workout.type.toLowerCase() === 'cycling')
       html += `
           <div class="workout__details">
           <span class="workout__icon">⚡️</span>
@@ -248,7 +251,23 @@ class App {
       </li>
           `;
     form.insertAdjacentHTML('afterend', html);
-    console.log(html);
+  }
+  _moveToPopup(e) {
+    console.log('clicked');
+    const workOutEl = e.target.closest('.workout');
+    console.log(workOutEl);
+
+    if (!workOutEl) return;
+    const workout = this.#workouts.find(
+      work => work.id === workOutEl.dataset.id
+    );
+    console.log(workout);
+    this.#map.setView(workout.coords, this.#mapZoomLevel, {
+      animate: true,
+      pan: {
+        duration: 1,
+      },
+    });
   }
 }
 
