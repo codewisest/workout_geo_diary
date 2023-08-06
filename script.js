@@ -21,7 +21,7 @@ class Workout {
     this.duration = duration;
   }
 
-  _setDeacription() {
+  _setDescription() {
     // prettier-ignore
     const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
@@ -41,7 +41,7 @@ class Running extends Workout {
     super(coords, distance, duration);
     this.cadence = cadence;
     this.calcPace();
-    this._setDeacription();
+    this._setDescription();
   }
 
   calcPace() {
@@ -56,7 +56,7 @@ class Cycling extends Workout {
     super(coords, distance, duration);
     this.elevation = elevation;
     this.calcSpeed();
-    this._setDeacription();
+    this._setDescription();
   }
 
   calcSpeed() {
@@ -73,7 +73,11 @@ class App {
   #workouts = [];
   #mapZoomLevel = 13;
   constructor() {
+    // get user's position
     this._getPosition();
+
+    // get data from local storage
+    this._getLocalStorage();
 
     form.addEventListener('submit', this._newWorkout.bind(this));
 
@@ -132,9 +136,6 @@ class App {
     if (type === 'running') {
       const cadence = Number(inputCadence.value);
       if (
-        // !Number.isFinite(distance) ||
-        // !Number.isFinite(duration) ||
-        // !Number.isFinite(cadence)
         !validInputs(distance, duration, cadence) ||
         !allPositive(distance, duration, cadence)
       )
@@ -165,6 +166,9 @@ class App {
     this._renderWorkout(workout);
 
     this._hideForm();
+
+    // set local storage
+    this._setLocalStorage();
   }
 
   _showForm(mapE) {
@@ -276,6 +280,23 @@ class App {
     // using public interface
     workout.click();
     console.log(workout);
+  }
+
+  _setLocalStorage() {
+    localStorage.setItem('workouts', JSON.stringify(this.#workouts));
+  }
+
+  _getLocalStorage() {
+    const data = JSON.parse(localStorage.getItem('workouts'));
+    console.log(data);
+
+    if (!data) return;
+
+    this.#workouts = data;
+
+    this.#workouts.forEach(workout => {
+      this._renderWorkout(workout);
+    });
   }
 }
 
