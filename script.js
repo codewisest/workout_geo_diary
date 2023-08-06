@@ -115,6 +115,10 @@ class App {
 
     //   handle clicks on map
     this.#map.on('click', this._showForm.bind(this));
+
+    this.#workouts.forEach(workout => {
+      this._renderWorkoutMarker(workout);
+    });
   }
 
   _newWorkout(e) {
@@ -212,7 +216,6 @@ class App {
   }
 
   _renderWorkout(workout) {
-    console.log(workout);
     let html = `
       <li class="workout workout--${workout.type.toLowerCase()} ${workout.type.toLowerCase()}-popup" data-id="${
       workout.id
@@ -270,7 +273,7 @@ class App {
     const workout = this.#workouts.find(
       work => work.id === workOutEl.dataset.id
     );
-    console.log(workout);
+
     this.#map.setView(workout.coords, this.#mapZoomLevel, {
       animate: true,
       pan: {
@@ -278,8 +281,7 @@ class App {
       },
     });
     // using public interface
-    workout.click();
-    console.log(workout);
+    // workout.click();
   }
 
   _setLocalStorage() {
