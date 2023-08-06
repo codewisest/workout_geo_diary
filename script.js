@@ -267,7 +267,6 @@ class App {
   _moveToPopup(e) {
     console.log('clicked');
     const workOutEl = e.target.closest('.workout');
-    console.log(workOutEl);
 
     if (!workOutEl) return;
     const workout = this.#workouts.find(
@@ -299,6 +298,11 @@ class App {
     this.#workouts.forEach(workout => {
       this._renderWorkout(workout);
     });
+  }
+
+  resetLocalStorage() {
+    localStorage.removeItem('workouts');
+    location.reload();
   }
 }
 
